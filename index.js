@@ -92,4 +92,133 @@ API.prototype.getDropletAction = function (dId, aId) {
   return this.request(`droplets/${dId}/actions/${aId}`, {val: 'action'});
 };
 
+API.prototype.createDroplet = function (options) {
+  return this.request('droplets', {method: 'POST', body: options, val: 'droplet'});
+};
+
+API.prototype.deleteDroplet = function (id) {
+  return this.request(`droplets/${id}`, {method: 'DELETE'});
+};
+
+/**
+ * Create droplet actions endpoint
+ * @param  {Integer} id The droplet ID
+ * @return {String}     The relevent droplet URL
+ */
+function getActions(id) {
+  return `droplets/${id}/actions`;
+}
+
+API.prototype.resetDropletPassword = function (id) {
+  return this.request(getActions(id), {
+    method: 'POST',
+    body: {type: 'pw_reset'}
+  });
+};
+
+API.prototype.powerOnDroplet = function (id) {
+  return this.request(getActions(id), {
+    method: 'POST',
+    body: {type: 'power_on'}
+  });
+};
+
+API.prototype.powerOffDroplet = function (id) {
+  return this.request(getActions(id), {
+    method: 'POST',
+    body: {type: 'power_off'}
+  });
+};
+
+API.prototype.powerCycleDroplet = function (id) {
+  return this.request(getActions(id), {
+    method: 'POST',
+    body: {type: 'power_cycle'}
+  });
+};
+
+API.prototype.shutdownDroplet = function (id) {
+  return this.request(getActions(id), {
+    method: 'POST',
+    body: {type: 'shutdown'}
+  });
+};
+
+API.prototype.rebootDroplet = function (id) {
+  return this.request(getActions(id), {
+    method: 'POST',
+    body: {type: 'reboot'}
+  });
+};
+
+API.prototype.disableDropletBackups = function (id) {
+  return this.request(getActions(id), {
+    method: 'POST',
+    body: {type: 'disable_backups'}
+  });
+};
+
+API.prototype.disableDropletBackups = function (id) {
+  return this.request(getActions(id), {
+    method: 'POST',
+    body: {type: 'disable_backups'}
+  });
+};
+
+API.prototype.restoreDroplet = function (id, image) {
+  return this.request(getActions(id), {
+    method: 'POST',
+    body: {type: 'restore', image}
+  });
+};
+
+API.prototype.rebuildDroplet = function (id, image) {
+  return this.request(getActions(id), {
+    method: 'POST',
+    body: {type: 'rebuild', image}
+  });
+};
+
+API.prototype.resizeDroplet = function (id, size) {
+  return this.request(getActions(id), {
+    method: 'POST',
+    body: {type: 'resize', size}
+  });
+};
+
+API.prototype.renameDroplet = function (id, name) {
+  return this.request(getActions(id), {
+    method: 'POST',
+    body: {type: 'rename', name}
+  });
+};
+
+API.prototype.changeDropletKernel = function (id, kernel) {
+  return this.request(getActions(id), {
+    method: 'POST',
+    body: {type: 'change_kernel', kernel}
+  });
+};
+
+API.prototype.enableDropletIpv6 = function (id) {
+  return this.request(getActions(id), {
+    method: 'POST',
+    body: {type: 'enable_ipv6'}
+  });
+};
+
+API.prototype.enableDropletPrivateNetworking = function (id) {
+  return this.request(getActions(id), {
+    method: 'POST',
+    body: {type: 'enable_private_networking'}
+  });
+};
+
+API.prototype.takeDropletSnapshot = function (id, name) {
+  return this.request(getActions(id), {
+    method: 'POST',
+    body: {type: 'snapshot', name}
+  });
+};
+
 module.exports = API;
