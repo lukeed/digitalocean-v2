@@ -1,8 +1,13 @@
 {
   "name": "digitalocean-v2",
   "version": "0.0.0",
-  "description": "",
+  "description": "A lightweight, Promise-based wrapper for the DigitalOcean v2 API.",
+  "repository": "https://github.com/lukeed/digitalocean-v2",
+  "license": "MIT",
   "main": "index.js",
+  "files": [
+    "*.js"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
