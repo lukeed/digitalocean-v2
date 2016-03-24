@@ -9,5 +9,18 @@
   "dependencies": {
     "got": "^6.2.0",
     "object-assign": "^4.0.1"
+  },
+  "keywords": {
+    "digitalocean",
+    "digital",
+    "ocean",
+    "promise",
+    "thennable",
+    "generator",
+    "wrapper",
+    "yield",
+    "then",
+    "api",
+    "v2"
   }
 }
