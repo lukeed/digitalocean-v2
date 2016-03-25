@@ -12,7 +12,8 @@ function API(opts) {
 	this.config = {
 		json: true,
 		headers: {
-			Authorization: `Bearer ${opts.token}`
+			'Authorization': `Bearer ${opts.token}`,
+			'Content-Type': 'application/json'
 		}
 	};
 }
