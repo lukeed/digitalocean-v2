@@ -28,6 +28,11 @@ API.prototype.request = function (endpt, opts) {
 	opts = assign(opts || {}, this.config);
 	const act = (opts.method || 'get').toLowerCase();
 
+	// serialize payload to JSON
+	if (opts.body) {
+		opts.body = JSON.stringify(opts.body);
+	}
+
 	return got[act](endpt, opts).catch(err => {
 		/** @todo better error handing, throw `got` errors */
 		console.log('error!', err);
