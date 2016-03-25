@@ -134,11 +134,11 @@ Type: `String`<br><br>
 
 ## Todos
 
-- [ ] Finish docs (:pistol:)
+- [ ] Finish docs (:gun:)
 - [ ] Add missing methods 
 - [ ] Add missing components (Regions, SSH Keys, Sizes, IPs, Tags)
 - [ ] Add tests
-- [ ] Ensure error-handling is 100% perfect
+- [x] Better error-handling
 
 ## License
 
