@@ -46,7 +46,7 @@ API.prototype.request = function (endpt, opts) {
  * @return {Object} The final API function
  */
 API.prototype.inject = function () {
-	const args = [].slice.call(arguments).concat(API.prototype);
+	const args = [].slice.call(arguments).concat(this);
 	API.prototype = assign.apply(null, args);
 	return API;
 };
