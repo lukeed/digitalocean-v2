@@ -17,7 +17,7 @@
     "url": "https://lukeed.com"
   },
   "scripts": {
-    "test": "xo"
+    "test": "xo && nyc ava"
   },
   "keywords": [
     "digitalocean",
@@ -37,6 +37,8 @@
     "object-assign": "^4.0.1"
   },
   "devDependencies": {
+    "ava": "^0.14.0",
+    "nyc": "^6.4.3",
     "xo": "^0.13.0"
   }
 }
