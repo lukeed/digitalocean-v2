@@ -5,7 +5,7 @@ const assign = require('object-assign');
 const host = 'https://api.digitalocean.com/v2';
 
 function API(opts) {
-	if (!opts.token) {
+	if (!opts || !opts.token) {
 		throw new Error('Expecting an access token');
 	}
 
