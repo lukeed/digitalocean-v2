@@ -46,24 +46,26 @@ test('Droplet.listDroplets()', async t => {
 	await t.notThrows(API.listDroplets());
 });
 
-// test('Droplet.createDroplet()', async t => {
-// 	const body = {};
-// 	for (let k of Object.keys(FAKE)) {
-// 		if (k !== 'ID') {
-// 			body[k.toLowerCase()] = FAKE[k];
-// 		}
-// 	}
+test('Droplet.createDroplet()', async t => {
+	const body = {};
+	for (let k of Object.keys(FAKE)) {
+		if (k !== 'ID') {
+			body[k.toLowerCase()] = FAKE[k];
+		}
+	}
 
-// 	await t.throws(API.createDroplet({name: FAKE.NAME}), null, 'incomplete request');
+	const res = await t.notThrows(API.createDroplet({name: FAKE.NAME}));
+	t.is(res.message, 'Unprocessable Entity');
+	t.is(res.code, 422);
 
-// 	const data = await t.notThrows(API.createDroplet(body), 'complete request');
+	// const data = await t.notThrows(API.createDroplet(body), 'complete request');
 
 // 	await sleep(40000);
 
 // 	console.log('... waited 40s!');
 
-// 	await t.notThrows(API.deleteDroplet(data.id), 'Droplet.deleteDroplet(id)');
-// });
+	// await t.notThrows(API.deleteDroplet(data.id), 'Droplet.deleteDroplet(id)');
+});
 
 const shouldBe404 = [
 	'getDroplet', 'listDropletKernels',
