@@ -35,7 +35,7 @@ API.prototype.request = function (endpt, opts) {
 
 	return got[act](endpt, opts).catch(err => {
 		err = {code: err.statusCode, message: err.statusMessage};
-		console.error('API Error:', err);
+		// console.error('API Error:', err);
 		return err;
 	}).then(data =>
 		data.body ? (opts.val ? data.body[opts.val] : data.body) : data
