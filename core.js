@@ -38,7 +38,8 @@ API.prototype.request = function (endpt, opts) {
 		console.error('API Error:', err);
 		return err;
 	}).then(data =>
-		(opts.val) ? data.body[opts.val] : data.body);
+		data.body ? (opts.val ? data.body[opts.val] : data.body) : data
+	);
 };
 
 /**
