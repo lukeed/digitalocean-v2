@@ -1,5 +1,5 @@
 import test from 'ava';
-// import sleep from 'sleep-promise';
+import sleep from 'sleep-promise';
 
 const DoV2 = require('../');
 const API = new DoV2({token: process.env.DOTOKEN});
@@ -47,6 +47,8 @@ test('Droplet.listDroplets()', async t => {
 });
 
 test('Droplet.createDroplet()', async t => {
+	t.plan(5);
+
 	const body = {};
 	for (let k of Object.keys(FAKE)) {
 		if (k !== 'ID') {
@@ -58,13 +60,12 @@ test('Droplet.createDroplet()', async t => {
 	t.is(res.message, 'Unprocessable Entity');
 	t.is(res.code, 422);
 
-	// const data = await t.notThrows(API.createDroplet(body), 'complete request');
+	const data = await t.notThrows(API.createDroplet(body), 'complete request');
 
-// 	await sleep(40000);
+	await sleep(40000);
+	console.log('waited 40s!');
 
-// 	console.log('... waited 40s!');
-
-	// await t.notThrows(API.deleteDroplet(data.id), 'Droplet.deleteDroplet(id)');
+	await t.notThrows(API.deleteDroplet(data.id), 'Droplet.deleteDroplet(id)');
 });
 
 const shouldBe404 = [
