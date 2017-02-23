@@ -9,7 +9,8 @@ API.prototype.inject(
 	require('./droplet'),
 	require('./image'),
 	require('./volume'),
-	require('./region')
+	require('./region'),
+	require('./floating-ip')
 );
 
 // send out everything!

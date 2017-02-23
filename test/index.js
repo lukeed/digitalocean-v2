@@ -18,7 +18,8 @@ const FAKE = {
 	REGION: 'nyc3',
 	STORAGE_REGION: 'nyc1', // Storage is not available in all regions.
 	IMAGE: 'ubuntu-14-04-x64',
-	VOLUME: '7724db7c-e098-11e5-b522-000f53304e51'
+	VOLUME: '7724db7c-e098-11e5-b522-000f53304e51',
+	IP: '192.168.0.1'
 };
 
 const isNotFound = (t, res) => t.is(res.code, 404);
@@ -232,6 +233,66 @@ test('Volume.resizeVolume(id, size)', async t => {
 	isNotFound(t, res);
 });
 
-test.only('Region.listRegions()', async t => {
+test('Region.listRegions()', async t => {
 	await t.notThrows(API.listRegions());
+});
+
+test('FloatingIP.listFloatingIPs()', async t => {
+	await t.notThrows(API.listFloatingIPs());
+});
+
+test('FloatingIP.createFloatingIP()', async t => {
+	t.plan(8);
+
+	const noParamsError = t.throws(() => {
+		API.createFloatingIP({});
+	});
+
+	t.is(noParamsError.message, 'Please specify either a dropletId or a region for this Floating IP.');
+
+	const excessiveParamsError = t.throws(() => {
+		API.createFloatingIP({droplet_id: FAKE.ID, region: FAKE.REGION}); // eslint-disable-line camelcase
+	});
+
+	t.is(excessiveParamsError.message,
+		'Please only specify either a dropletId or a region (not both) when creating a new Floating IP.');
+
+	const res = await t.notThrows(API.createFloatingIP({region: 'bad region'}));
+	t.is(res.code, 422);
+
+	const data = await t.notThrows(API.createFloatingIP({region: FAKE.REGION}), 'complete request');
+
+	if (data.code && data.code !== 202) {
+		t.fail(`floating ip could not be created: ${JSON.stringify(data)}`);
+	}
+
+	await sleep(10000);
+
+	await t.notThrows(API.deleteFloatingIP(data.ip), 'FloatingIP.createFloatingIP(id)');
+});
+
+const shouldAlsoAlsoBe404 = [
+	'getFloatingIP', 'getFloatingIPAction'
+];
+
+for (let act of shouldAlsoAlsoBe404) {
+	test(`FloatingIP.${act}(id)`, async t => {
+		const res = await t.notThrows(API[act](FAKE.VOLUME, FAKE.ID));
+		isNotFound(t, res);
+	});
+}
+
+test('FloatingIP.assignFloatingIP(ip, dropletId)', async t => {
+	const res = await t.notThrows(API.assignFloatingIP(FAKE.IP, FAKE.ID));
+	isNotFound(t, res);
+});
+
+test('FloatingIP.unassignFloatingIP(ip)', async t => {
+	const res = await t.notThrows(API.unassignFloatingIP(FAKE.IP));
+	isNotFound(t, res);
+});
+
+test('FloatingIP.listFloatingIPActions(ip)', async t => {
+	const res = await API.listFloatingIPActions(FAKE.IP);
+	t.deepEqual(res, [], 'is empty array');
 });
