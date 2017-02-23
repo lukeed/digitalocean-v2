@@ -12,15 +12,16 @@ const API = new DoV2({token: process.env.DOTOKEN});
 const FAKE = {
 	ID: 'aaa',
 	NAME: 'name',
+	NONEXISTANT_NAME: 'nonexistant_name',
 	SIZE: '512mb',
 	SIZE_GIGABYTES: 20,
 	REGION: 'nyc3',
+	STORAGE_REGION: 'nyc1', // Storage is not available in all regions.
 	IMAGE: 'ubuntu-14-04-x64',
 	VOLUME: '7724db7c-e098-11e5-b522-000f53304e51'
 };
 
 const isNotFound = (t, res) => t.is(res.code, 404);
-const isUnprocessable = (t, res) => t.is(res.code, 422);
 
 test('throw without a `token`', t => {
 	t.throws(() => new DoV2(), 'Expecting an access token');
@@ -164,7 +165,15 @@ test('Volume.createVolume()', async t => {
 	const res = await t.notThrows(API.createVolume({name: FAKE.NAME}));
 	t.is(res.code, 400);
 
-	const data = await t.notThrows(API.createVolume(body), 'complete request');
+	const data = await t.notThrows(API.createVolume({
+		size_gigabytes: FAKE.SIZE_GIGABYTES, // eslint-disable-line camelcase
+		name: FAKE.NAME,
+		region: FAKE.STORAGE_REGION
+	}), 'complete request');
+
+	if (data.code && data.code !== 201) {
+		t.fail(`volume could not be created: ${JSON.stringify(data)}`);
+	}
 
 	await sleep(20000);
 	console.log('waited 20s!');
@@ -183,6 +192,16 @@ for (let act of shouldAlsoBe404) {
 	});
 }
 
+test('Volume.getVolumeByName(name, region)', async t => {
+	const res = await t.notThrows(API.getVolumeByName(FAKE.NONEXISTANT_NAME, FAKE.STORAGE_REGION));
+	t.deepEqual(res, [], 'is empty array');
+});
+
+test('Volume.deleteVolumeByName(name, region)', async t => {
+	const res = await t.notThrows(API.deleteVolumeByName(FAKE.NONEXISTANT_NAME, FAKE.STORAGE_REGION));
+	isNotFound(t, res);
+});
+
 test('Volume.listVolumeActions(id)', async t => {
 	const res = await API.listVolumeActions(FAKE.VOLUME);
 	t.deepEqual(res, [], 'is empty array');
@@ -190,7 +209,7 @@ test('Volume.listVolumeActions(id)', async t => {
 
 test('Volume.takeVolumeSnapshot(id, name)', async t => {
 	const res = await t.notThrows(API.takeVolumeSnapshot(FAKE.VOLUME, FAKE.NAME));
-	isUnprocessable(t, res);
+	isNotFound(t, res);
 });
 
 test('Volume.attachVolume(volumeId, dropletId)', async t => {
