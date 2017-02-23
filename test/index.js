@@ -1,6 +1,11 @@
 import test from 'ava';
 import sleep from 'sleep-promise';
 
+if (!process.env.DOTOKEN) {
+	console.error('You must provide a DigitalOcean API token as the DOTOKEN env var to run these tests.');
+	process.exit(1);
+}
+
 const DoV2 = require('../');
 const API = new DoV2({token: process.env.DOTOKEN});
 
@@ -8,14 +13,14 @@ const FAKE = {
 	ID: 'aaa',
 	NAME: 'name',
 	SIZE: '512mb',
+	SIZE_GIGABYTES: 20,
 	REGION: 'nyc3',
-	IMAGE: 'ubuntu-14-04-x64'
+	IMAGE: 'ubuntu-14-04-x64',
+	VOLUME: '7724db7c-e098-11e5-b522-000f53304e51'
 };
 
-const isNotFound = (t, res) => {
-	t.is(res.message, 'Not Found');
-	t.is(res.code, 404);
-};
+const isNotFound = (t, res) => t.is(res.code, 404);
+const isUnprocessable = (t, res) => t.is(res.code, 422);
 
 test('throw without a `token`', t => {
 	t.throws(() => new DoV2(), 'Expecting an access token');
@@ -51,7 +56,7 @@ test('Droplet.createDroplet()', async t => {
 
 	const body = {};
 	for (let k of Object.keys(FAKE)) {
-		if (k !== 'ID') {
+		if (k !== 'ID' && k !== 'VOLUME') {
 			body[k.toLowerCase()] = FAKE[k];
 		}
 	}
@@ -139,5 +144,66 @@ test('Image.renameImage(id, name)', async t => {
 
 test('Image.transferImage(id, region)', async t => {
 	const res = await t.notThrows(API.transferImage(FAKE.ID, FAKE.REGION));
+	isNotFound(t, res);
+});
+
+test('Volume.listVolumes()', async t => {
+	await t.notThrows(API.listVolumes());
+});
+
+test('Volume.createVolume()', async t => {
+	t.plan(4);
+
+	const body = {};
+	for (let k of Object.keys(FAKE)) {
+		if (k !== 'ID' && k !== 'VOLUME') {
+			body[k.toLowerCase()] = FAKE[k];
+		}
+	}
+
+	const res = await t.notThrows(API.createVolume({name: FAKE.NAME}));
+	t.is(res.code, 400);
+
+	const data = await t.notThrows(API.createVolume(body), 'complete request');
+
+	await sleep(20000);
+	console.log('waited 20s!');
+
+	await t.notThrows(API.deleteVolume(data.id), 'Volume.deleteVolume(id)');
+});
+
+const shouldAlsoBe404 = [
+	'getVolume', 'listVolumeSnapshots', 'getVolumeAction'
+];
+
+for (let act of shouldAlsoBe404) {
+	test(`Volume.${act}(id)`, async t => {
+		const res = await t.notThrows(API[act](FAKE.VOLUME, FAKE.ID));
+		isNotFound(t, res);
+	});
+}
+
+test('Volume.listVolumeActions(id)', async t => {
+	const res = await API.listVolumeActions(FAKE.VOLUME);
+	t.deepEqual(res, [], 'is empty array');
+});
+
+test('Volume.takeVolumeSnapshot(id, name)', async t => {
+	const res = await t.notThrows(API.takeVolumeSnapshot(FAKE.VOLUME, FAKE.NAME));
+	isUnprocessable(t, res);
+});
+
+test('Volume.attachVolume(volumeId, dropletId)', async t => {
+	const res = await t.notThrows(API.attachVolume(FAKE.VOLUME, FAKE.ID));
+	isNotFound(t, res);
+});
+
+test('Volume.detachVolume(volumeId, dropletId)', async t => {
+	const res = await t.notThrows(API.detachVolume(FAKE.VOLUME, FAKE.ID));
+	isNotFound(t, res);
+});
+
+test('Volume.resizeVolume(id, size)', async t => {
+	const res = await t.notThrows(API.resizeVolume(FAKE.VOLUME, FAKE.SIZE_GIGABYTES));
 	isNotFound(t, res);
 });
