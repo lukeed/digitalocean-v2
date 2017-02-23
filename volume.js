@@ -23,25 +23,34 @@ module.exports = {
 		return this.request(`volumes/${id}`, {val: 'volume'});
 	},
 
+	getVolumeByName: function (name, region) {
+		return this.request(`volumes?name=${name}&region=${region}`, {val: 'volumes'});
+	},
+
 	listVolumeSnapshots: function (id) {
 		const val = 'snapshots';
 		return this.request(`volumes/${id}/${val}`, {val});
 	},
 
-	listVolumeActions: function (id) {
-		const val = 'actions';
-		return this.request(`volumes/${id}/${val}`, {val});
-	},
-
 	takeVolumeSnapshot: function (id, name) {
-		return this.request(getActions(id), {
+		return this.request(`volumes/${id}/snapshots`, {
 			method: 'POST',
-			body: {type: 'snapshot', name}
+			body: {name},
+			val: 'snapshot'
 		});
 	},
 
 	deleteVolume: function (id) {
 		return this.request(`volumes/${id}`, {method: 'DELETE'});
+	},
+
+	deleteVolumeByName: function (name, region) {
+		return this.request(`volumes?name=${name}&region=${region}`, {method: 'DELETE'});
+	},
+
+	listVolumeActions: function (id) {
+		const val = 'actions';
+		return this.request(`volumes/${id}/${val}`, {val});
 	},
 
 	attachVolume: function (volumeId, dropletId) {
