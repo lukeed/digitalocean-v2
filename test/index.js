@@ -15,13 +15,12 @@ const FAKE = {
 	SIZE: '512mb',
 	SIZE_GIGABYTES: 20,
 	REGION: 'nyc3',
-	IMAGE: 'ubuntu-14-04-x64'
+	IMAGE: 'ubuntu-14-04-x64',
+	VOLUME: '7724db7c-e098-11e5-b522-000f53304e51'
 };
 
-const isNotFound = (t, res) => {
-	t.is(res.message, 'Not Found');
-	t.is(res.code, 404);
-};
+const isNotFound = (t, res) => t.is(res.code, 404);
+const isUnprocessable = (t, res) => t.is(res.code, 422);
 
 test('throw without a `token`', t => {
 	t.throws(() => new DoV2(), 'Expecting an access token');
@@ -57,7 +56,7 @@ test('Droplet.createDroplet()', async t => {
 
 	const body = {};
 	for (let k of Object.keys(FAKE)) {
-		if (k !== 'ID') {
+		if (k !== 'ID' && k !== 'VOLUME') {
 			body[k.toLowerCase()] = FAKE[k];
 		}
 	}
@@ -153,18 +152,17 @@ test('Volume.listVolumes()', async t => {
 });
 
 test('Volume.createVolume()', async t => {
-	t.plan(5);
+	t.plan(4);
 
 	const body = {};
 	for (let k of Object.keys(FAKE)) {
-		if (k !== 'ID') {
+		if (k !== 'ID' && k !== 'VOLUME') {
 			body[k.toLowerCase()] = FAKE[k];
 		}
 	}
 
 	const res = await t.notThrows(API.createVolume({name: FAKE.NAME}));
-	t.is(res.message, 'Unprocessable Entity');
-	t.is(res.code, 422);
+	t.is(res.code, 400);
 
 	const data = await t.notThrows(API.createVolume(body), 'complete request');
 
@@ -180,32 +178,32 @@ const shouldAlsoBe404 = [
 
 for (let act of shouldAlsoBe404) {
 	test(`Volume.${act}(id)`, async t => {
-		const res = await t.notThrows(API[act](FAKE.ID));
+		const res = await t.notThrows(API[act](FAKE.VOLUME, FAKE.ID));
 		isNotFound(t, res);
 	});
 }
 
 test('Volume.listVolumeActions(id)', async t => {
-	const res = await API.listVolumeActions(FAKE.ID);
+	const res = await API.listVolumeActions(FAKE.VOLUME);
 	t.deepEqual(res, [], 'is empty array');
 });
 
 test('Volume.takeVolumeSnapshot(id, name)', async t => {
-	const res = await t.notThrows(API.takeVolumeSnapshot(FAKE.ID, FAKE.NAME));
-	isNotFound(t, res);
+	const res = await t.notThrows(API.takeVolumeSnapshot(FAKE.VOLUME, FAKE.NAME));
+	isUnprocessable(t, res);
 });
 
 test('Volume.attachVolume(volumeId, dropletId)', async t => {
-	const res = await t.notThrows(API.attachVolume(FAKE.ID, FAKE.ID));
+	const res = await t.notThrows(API.attachVolume(FAKE.VOLUME, FAKE.ID));
 	isNotFound(t, res);
 });
 
 test('Volume.detachVolume(volumeId, dropletId)', async t => {
-	const res = await t.notThrows(API.detachVolume(FAKE.ID, FAKE.ID));
+	const res = await t.notThrows(API.detachVolume(FAKE.VOLUME, FAKE.ID));
 	isNotFound(t, res);
 });
 
 test('Volume.resizeVolume(id, size)', async t => {
-	const res = await t.notThrows(API.resizeVolume(FAKE.ID, FAKE.SIZE_GIGABYTES));
+	const res = await t.notThrows(API.resizeVolume(FAKE.VOLUME, FAKE.SIZE_GIGABYTES));
 	isNotFound(t, res);
 });
