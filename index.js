@@ -8,7 +8,8 @@ API.prototype.inject(
 	require('./domain'),
 	require('./droplet'),
 	require('./image'),
-	require('./volume')
+	require('./volume'),
+	require('./region')
 );
 
 // send out everything!
