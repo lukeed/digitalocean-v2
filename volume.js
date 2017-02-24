@@ -63,21 +63,21 @@ module.exports = {
 	attachVolume: function (volumeId, dropletId) {
 		return this.request(getActions(volumeId), {
 			method: 'POST',
-			body: {type: 'attach', droplet_id: dropletId} // eslint-disable-line camelcase
+			body: {type: 'attach', droplet_id: dropletId}
 		});
 	},
 
 	detachVolume: function (volumeId, dropletId) {
 		return this.request(getActions(volumeId), {
 			method: 'POST',
-			body: {type: 'detach', droplet_id: dropletId} // eslint-disable-line camelcase
+			body: {type: 'detach', droplet_id: dropletId}
 		});
 	},
 
 	resizeVolume: function (id, size) {
 		return this.request(getActions(id), {
 			method: 'POST',
-			body: {type: 'resize', size_gigabytes: size} // eslint-disable-line camelcase
+			body: {type: 'resize', size_gigabytes: size}
 		});
 	},
 

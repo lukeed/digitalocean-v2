@@ -41,5 +41,11 @@
     "nyc": "^6.4.3",
     "sleep-promise": "^1.0.0",
     "xo": "^0.13.0"
+  },
+  "xo": {
+    "rules": {
+      "no-nested-ternary": 1,
+      "camelcase": 1
+    }
   }
 }

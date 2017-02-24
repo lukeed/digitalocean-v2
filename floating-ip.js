@@ -20,11 +20,11 @@ module.exports = {
 	},
 
 	createFloatingIP: function (body) {
-		if (body.droplet_id && body.region) { // eslint-disable-line camelcase
+		if (body.droplet_id && body.region) {
 			throw new Error('Please only specify either a droplet_id or a region (not both) when creating a new Floating IP.');
 		}
 
-		if (!body.droplet_id && !body.region) { // eslint-disable-line camelcase
+		if (!body.droplet_id && !body.region) {
 			throw new Error('Please specify either a droplet_id or a region for this Floating IP.');
 		}
 
@@ -47,14 +47,14 @@ module.exports = {
 	assignFloatingIP: function (ip, dropletId) {
 		return this.request(getActions(ip), {
 			method: 'POST',
-			body: {type: 'assign', droplet_id: dropletId} // eslint-disable-line camelcase
+			body: {type: 'assign', droplet_id: dropletId}
 		});
 	},
 
 	unassignFloatingIP: function (ip) {
 		return this.request(getActions(ip), {
 			method: 'POST',
-			body: {type: 'unassign'} // eslint-disable-line camelcase
+			body: {type: 'unassign'}
 		});
 	}
 };

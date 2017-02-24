@@ -171,7 +171,7 @@ test('Volume.createVolume()', async t => {
 	t.is(res.code, 400);
 
 	const data = await t.notThrows(API.createVolume({
-		size_gigabytes: FAKE.SIZE_GIGABYTES, // eslint-disable-line camelcase
+		size_gigabytes: FAKE.SIZE_GIGABYTES,
 		name: FAKE.NAME,
 		region: FAKE.STORAGE_REGION
 	}), 'complete request');
@@ -251,7 +251,7 @@ test('FloatingIP.createFloatingIP()', async t => {
 	t.is(noParamsError.message, 'Please specify either a dropletId or a region for this Floating IP.');
 
 	const excessiveParamsError = t.throws(() => {
-		API.createFloatingIP({droplet_id: FAKE.ID, region: FAKE.REGION}); // eslint-disable-line camelcase
+		API.createFloatingIP({droplet_id: FAKE.ID, region: FAKE.REGION});
 	});
 
 	t.is(excessiveParamsError.message,
