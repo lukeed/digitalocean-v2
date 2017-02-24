@@ -247,15 +247,12 @@ test('FloatingIP.createFloatingIP()', async t => {
 	const noParamsError = t.throws(() => {
 		API.createFloatingIP({});
 	});
-
-	t.is(noParamsError.message, 'Please specify either a dropletId or a region for this Floating IP.');
+	t.regex(noParamsError.message, /Please specify either/);
 
 	const excessiveParamsError = t.throws(() => {
 		API.createFloatingIP({droplet_id: FAKE.ID, region: FAKE.REGION});
 	});
-
-	t.is(excessiveParamsError.message,
-		'Please only specify either a dropletId or a region (not both) when creating a new Floating IP.');
+	t.regex(excessiveParamsError.message, /not both/);
 
 	const res = await t.notThrows(API.createFloatingIP({region: 'bad region'}));
 	t.is(res.code, 422);
