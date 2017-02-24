@@ -208,7 +208,8 @@ test('Volume.deleteVolumeByName(name, region)', async t => {
 
 test('Volume.listVolumeActions(id)', async t => {
 	const res = await API.listVolumeActions(FAKE.VOLUME);
-	t.deepEqual(res, [], 'is empty array');
+	t.true(Array.isArray(res));
+	t.true(res.length > 0);
 });
 
 test('Volume.takeVolumeSnapshot(id, name)', async t => {
