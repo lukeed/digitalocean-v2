@@ -152,6 +152,10 @@ test('Volume.listVolumes()', async t => {
 	await t.notThrows(API.listVolumes());
 });
 
+test('Volume.listVolumes(region)', async t => {
+	await t.notThrows(API.listVolumes(FAKE.REGION));
+});
+
 test('Volume.createVolume()', async t => {
 	t.plan(4);
 
