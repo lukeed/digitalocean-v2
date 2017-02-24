@@ -10,9 +10,16 @@ function getActions(id) {
 }
 
 module.exports = {
-	listVolumes: function () {
+	listVolumes: function (region) {
 		const val = 'volumes';
-		return this.request(val, {val});
+
+		const options = {val};
+
+		if (region) {
+			options.query = {region}
+		}
+
+		return this.request(val, options);
 	},
 
 	createVolume: function (options) {
