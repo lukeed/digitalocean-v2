@@ -230,3 +230,7 @@ test('Volume.resizeVolume(id, size)', async t => {
 	const res = await t.notThrows(API.resizeVolume(FAKE.VOLUME, FAKE.SIZE_GIGABYTES));
 	isNotFound(t, res);
 });
+
+test.only('Region.listRegions()', async t => {
+	await t.notThrows(API.listRegions());
+});
