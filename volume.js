@@ -16,7 +16,7 @@ module.exports = {
 		const options = {val};
 
 		if (region) {
-			options.query = {region}
+			options.query = {region};
 		}
 
 		return this.request(val, options);
