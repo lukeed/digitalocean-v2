@@ -1,11 +1,9 @@
 'use strict';
 
-const assign = require('object-assign');
-
 module.exports = {
 	listImages: function (obj) {
 		const val = 'images';
-		obj = assign({val}, obj);
+		obj = Object.assign({val}, obj);
 		return this.request(val, obj);
 	},
 

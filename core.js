@@ -1,7 +1,6 @@
 'use strict';
 
 const got = require('got');
-const assign = require('object-assign');
 const host = 'https://api.digitalocean.com/v2';
 
 function API(opts) {
@@ -25,7 +24,7 @@ function API(opts) {
  */
 API.prototype.request = function (endpt, opts) {
 	endpt = `${host}/${endpt}`;
-	opts = assign(opts || {}, this.config);
+	opts = Object.assign(opts || {}, this.config);
 	const act = (opts.method || 'get').toLowerCase();
 
 	// serialize payload to JSON
@@ -48,7 +47,7 @@ API.prototype.request = function (endpt, opts) {
  */
 API.prototype.inject = function () {
 	const args = [].slice.call(arguments).concat(this);
-	API.prototype = assign.apply(null, args);
+	API.prototype = Object.assign.apply(null, args);
 	return API;
 };
 
