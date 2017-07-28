@@ -1,4 +1,5 @@
-*.log
-.DS_Store
-.nyc_output
 node_modules
+.nyc_output
+.DS_Store
+*.lock
+*.log
