@@ -33,7 +33,7 @@
     "v2"
   ],
   "dependencies": {
-    "got": "^6.2.0"
+    "node-fetch": "^1.7.1"
   },
   "devDependencies": {
     "ava": "^0.21.0",

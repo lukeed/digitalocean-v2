@@ -1,19 +1,30 @@
 'use strict';
 
-const got = require('got');
-const host = 'https://api.digitalocean.com/v2';
+const fetch = require('node-fetch');
+
+const BASE = 'https://api.digitalocean.com/v2';
+
+function handle(res) {
+	if (res.status === 204) {
+		return res.text();
+	}
+	if (res.ok) {
+		return res.json();
+	}
+	return {
+		code: res.status,
+		message: res.statusText
+	};
+}
 
 function API(opts) {
 	if (!opts || !opts.token) {
 		throw new Error('Expecting an access token');
 	}
 
-	this.config = {
-		json: true,
-		headers: {
-			'Authorization': `Bearer ${opts.token}`,
-			'Content-Type': 'application/json'
-		}
+	this.headers = {
+		Authorization: `Bearer ${opts.token}`,
+		'Content-Type': 'application/json'
 	};
 }
 
@@ -22,23 +33,19 @@ function API(opts) {
  * @param  {Object} opts HTTP options object
  * @return {Promise}
  */
-API.prototype.request = function (endpt, opts) {
-	endpt = `${host}/${endpt}`;
-	opts = Object.assign(opts || {}, this.config);
-	const act = (opts.method || 'get').toLowerCase();
+API.prototype.request = function (uri, opts) {
+	uri = `${BASE}/${uri}`;
 
-	// serialize payload to JSON
+	opts = Object.assign({headers: this.headers}, opts);
+	opts.method = (opts.method || 'get').toLowerCase();
+
 	if (opts.body) {
 		opts.body = JSON.stringify(opts.body);
 	}
 
-	return got[act](endpt, opts).catch(err => {
-		err = {code: err.statusCode, message: err.statusMessage};
-		// console.error('API Error:', err);
-		return err;
-	}).then(data =>
-		data.body ? (opts.val ? data.body[opts.val] : data.body) : data
-	);
+	const key = opts.val;
+
+	return fetch(uri, opts).then(handle).then(data => data[key] || data);
 };
 
 /**
