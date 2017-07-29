@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-	listDomains: function () {
+	listDomains() {
 		const val = 'domains';
 		return this.request(val, {val});
 	}

@@ -10,146 +10,146 @@ function getActions(id) {
 }
 
 module.exports = {
-	listDroplets: function () {
+	listDroplets() {
 		const val = 'droplets';
 		return this.request(val, {val});
 	},
 
-	getDroplet: function (id) {
+	getDroplet(id) {
 		return this.request(`droplets/${id}`, {val: 'droplet'});
 	},
 
-	listDropletKernels: function (id) {
+	listDropletKernels(id) {
 		const val = 'kernels';
 		return this.request(`droplets/${id}/${val}`, {val});
 	},
 
-	listDropletSnapshots: function (id) {
+	listDropletSnapshots(id) {
 		const val = 'snapshots';
 		return this.request(`droplets/${id}/${val}`, {val});
 	},
 
-	listDropletBackups: function (id) {
+	listDropletBackups(id) {
 		const val = 'backups';
 		return this.request(`droplets/${id}/${val}`, {val});
 	},
 
-	listDropletActions: function (id) {
+	listDropletActions(id) {
 		const val = 'actions';
 		return this.request(`droplets/${id}/${val}`, {val});
 	},
 
-	getDropletAction: function (dId, aId) {
+	getDropletAction(dId, aId) {
 		return this.request(`droplets/${dId}/actions/${aId}`, {val: 'action'});
 	},
 
-	createDroplet: function (options) {
+	createDroplet(options) {
 		return this.request('droplets', {method: 'POST', body: options, val: 'droplet'});
 	},
 
-	deleteDroplet: function (id) {
+	deleteDroplet(id) {
 		return this.request(`droplets/${id}`, {method: 'DELETE'});
 	},
 
-	resetDropletPassword: function (id) {
+	resetDropletPassword(id) {
 		return this.request(getActions(id), {
 			method: 'POST',
 			body: {type: 'pw_reset'}
 		});
 	},
 
-	powerOnDroplet: function (id) {
+	powerOnDroplet(id) {
 		return this.request(getActions(id), {
 			method: 'POST',
 			body: {type: 'power_on'}
 		});
 	},
 
-	powerOffDroplet: function (id) {
+	powerOffDroplet(id) {
 		return this.request(getActions(id), {
 			method: 'POST',
 			body: {type: 'power_off'}
 		});
 	},
 
-	powerCycleDroplet: function (id) {
+	powerCycleDroplet(id) {
 		return this.request(getActions(id), {
 			method: 'POST',
 			body: {type: 'power_cycle'}
 		});
 	},
 
-	shutdownDroplet: function (id) {
+	shutdownDroplet(id) {
 		return this.request(getActions(id), {
 			method: 'POST',
 			body: {type: 'shutdown'}
 		});
 	},
 
-	rebootDroplet: function (id) {
+	rebootDroplet(id) {
 		return this.request(getActions(id), {
 			method: 'POST',
 			body: {type: 'reboot'}
 		});
 	},
 
-	disableDropletBackups: function (id) {
+	disableDropletBackups(id) {
 		return this.request(getActions(id), {
 			method: 'POST',
 			body: {type: 'disable_backups'}
 		});
 	},
 
-	restoreDroplet: function (id, image) {
+	restoreDroplet(id, image) {
 		return this.request(getActions(id), {
 			method: 'POST',
 			body: {type: 'restore', image}
 		});
 	},
 
-	rebuildDroplet: function (id, image) {
+	rebuildDroplet(id, image) {
 		return this.request(getActions(id), {
 			method: 'POST',
 			body: {type: 'rebuild', image}
 		});
 	},
 
-	resizeDroplet: function (id, size) {
+	resizeDroplet(id, size) {
 		return this.request(getActions(id), {
 			method: 'POST',
 			body: {type: 'resize', size}
 		});
 	},
 
-	renameDroplet: function (id, name) {
+	renameDroplet(id, name) {
 		return this.request(getActions(id), {
 			method: 'POST',
 			body: {type: 'rename', name}
 		});
 	},
 
-	changeDropletKernel: function (id, kernel) {
+	changeDropletKernel(id, kernel) {
 		return this.request(getActions(id), {
 			method: 'POST',
 			body: {type: 'change_kernel', kernel}
 		});
 	},
 
-	enableDropletIpv6: function (id) {
+	enableDropletIpv6(id) {
 		return this.request(getActions(id), {
 			method: 'POST',
 			body: {type: 'enable_ipv6'}
 		});
 	},
 
-	enableDropletPrivateNetworking: function (id) {
+	enableDropletPrivateNetworking(id) {
 		return this.request(getActions(id), {
 			method: 'POST',
 			body: {type: 'enable_private_networking'}
 		});
 	},
 
-	takeDropletSnapshot: function (id, name) {
+	takeDropletSnapshot(id, name) {
 		return this.request(getActions(id), {
 			method: 'POST',
 			body: {type: 'snapshot', name}

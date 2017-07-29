@@ -10,7 +10,7 @@ function getActions(id) {
 }
 
 module.exports = {
-	listVolumes: function (region) {
+	listVolumes(region) {
 		const val = 'volumes';
 
 		const options = {val};
@@ -22,24 +22,24 @@ module.exports = {
 		return this.request(val, options);
 	},
 
-	createVolume: function (options) {
+	createVolume(options) {
 		return this.request('volumes', {method: 'POST', body: options, val: 'volume'});
 	},
 
-	getVolume: function (id) {
+	getVolume(id) {
 		return this.request(`volumes/${id}`, {val: 'volume'});
 	},
 
-	getVolumeByName: function (name, region) {
+	getVolumeByName(name, region) {
 		return this.request(`volumes?name=${name}&region=${region}`, {val: 'volumes'});
 	},
 
-	listVolumeSnapshots: function (id) {
+	listVolumeSnapshots(id) {
 		const val = 'snapshots';
 		return this.request(`volumes/${id}/${val}`, {val});
 	},
 
-	takeVolumeSnapshot: function (id, name) {
+	takeVolumeSnapshot(id, name) {
 		return this.request(`volumes/${id}/snapshots`, {
 			method: 'POST',
 			body: {name},
@@ -47,41 +47,41 @@ module.exports = {
 		});
 	},
 
-	deleteVolume: function (id) {
+	deleteVolume(id) {
 		return this.request(`volumes/${id}`, {method: 'DELETE'});
 	},
 
-	deleteVolumeByName: function (name, region) {
+	deleteVolumeByName(name, region) {
 		return this.request(`volumes?name=${name}&region=${region}`, {method: 'DELETE'});
 	},
 
-	listVolumeActions: function (id) {
+	listVolumeActions(id) {
 		const val = 'actions';
 		return this.request(`volumes/${id}/${val}`, {val});
 	},
 
-	attachVolume: function (volumeId, dropletId) {
+	attachVolume(volumeId, dropletId) {
 		return this.request(getActions(volumeId), {
 			method: 'POST',
 			body: {type: 'attach', droplet_id: dropletId}
 		});
 	},
 
-	detachVolume: function (volumeId, dropletId) {
+	detachVolume(volumeId, dropletId) {
 		return this.request(getActions(volumeId), {
 			method: 'POST',
 			body: {type: 'detach', droplet_id: dropletId}
 		});
 	},
 
-	resizeVolume: function (id, size) {
+	resizeVolume(id, size) {
 		return this.request(getActions(id), {
 			method: 'POST',
 			body: {type: 'resize', size_gigabytes: size}
 		});
 	},
 
-	getVolumeAction: function (vId, aId) {
+	getVolumeAction(vId, aId) {
 		return this.request(`volumes/${vId}/actions/${aId}`, {val: 'action'});
 	}
 };

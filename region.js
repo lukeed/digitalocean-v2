@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-	listRegions: function () {
+	listRegions() {
 		const val = 'regions';
 		return this.request(val, {val});
 	}

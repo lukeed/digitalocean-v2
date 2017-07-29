@@ -1,18 +1,18 @@
 'use strict';
 
 module.exports = {
-	listImages: function (obj) {
+	listImages(obj) {
 		const val = 'images';
 		obj = Object.assign({val}, obj);
 		return this.request(val, obj);
 	},
 
-	listDistributionImages: function () {
+	listDistributionImages() {
 		const type = 'distribution';
 		return this.listImages({query: {type}});
 	},
 
-	listApplicationImages: function () {
+	listApplicationImages() {
 		const type = 'application';
 		return this.listImages({query: {type}});
 	},
@@ -22,12 +22,12 @@ module.exports = {
 	 * @param  {Integer|String} id  The image's id or slug
 	 * @return {Promise}
 	 */
-	getImage: function (id) {
+	getImage(id) {
 		const val = 'image';
 		return this.request(`images/${id}`, {val});
 	},
 
-	renameImage: function (id, name) {
+	renameImage(id, name) {
 		return this.request(`images/${id}`, {
 			method: 'POST',
 			body: {name},
@@ -35,7 +35,7 @@ module.exports = {
 		});
 	},
 
-	transferImage: function (id, region) {
+	transferImage(id, region) {
 		return this.request(`images/${id}/actions`, {
 			body: {type: 'transfer', region},
 			method: 'POST',
@@ -43,7 +43,7 @@ module.exports = {
 		});
 	},
 
-	deleteImage: function (id) {
+	deleteImage(id) {
 		return this.request(`images/${id}`, {method: 'DELETE'});
 	}
 };

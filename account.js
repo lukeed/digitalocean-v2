@@ -1,17 +1,17 @@
 'use strict';
 
 module.exports = {
-	getUser: function () {
+	getUser() {
 		const val = 'account';
 		return this.request(val, {val});
 	},
 
-	listActions: function () {
+	listActions() {
 		const val = 'actions';
 		return this.request(val, {val});
 	},
 
-	getAction: function (id) {
+	getAction(id) {
 		return this.request(`actions/${id}`, {val: 'action'});
 	}
 };
