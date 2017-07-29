@@ -43,6 +43,9 @@
   },
   "xo": {
     "rules": {
+      "unicorn/no-process-exit": 1,
+      "capitalized-comments": 0,
+      "no-mixed-operators": 0,
       "no-nested-ternary": 1,
       "camelcase": 1
     }
