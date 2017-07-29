@@ -1,12 +1,12 @@
 import test from 'ava';
 import sleep from 'sleep-promise';
+import DoV2 from '..';
 
 if (!process.env.DOTOKEN) {
 	console.error('You must provide a DigitalOcean API token as the DOTOKEN env var to run these tests.');
 	process.exit(1);
 }
 
-const DoV2 = require('../');
 const API = new DoV2({token: process.env.DOTOKEN});
 
 const FAKE = {
@@ -28,8 +28,8 @@ test('throw without a `token`', t => {
 	t.throws(() => new DoV2(), 'Expecting an access token');
 });
 
-test('API construct has `config` property', t => {
-	t.truthy(API.config, 'exists');
+test('API construct has `headers` property', t => {
+	t.truthy(API.headers, 'exists');
 });
 
 test('Account.getUser()', async t => {
@@ -41,8 +41,7 @@ test('Account.listActions()', async t => {
 });
 
 test('Account.getAction(id)', async t => {
-	const res = await t.notThrows(API.getAction(FAKE.ID));
-	isNotFound(t, res);
+	isNotFound(t, await API.getAction(FAKE.ID));
 });
 
 test('Domain.listDomains()', async t => {
@@ -54,20 +53,21 @@ test('Droplet.listDroplets()', async t => {
 });
 
 test('Droplet.createDroplet()', async t => {
-	t.plan(5);
+	t.plan(4);
 
 	const body = {};
-	for (let k of Object.keys(FAKE)) {
+	for (const k of Object.keys(FAKE)) {
 		if (k !== 'ID' && k !== 'VOLUME') {
 			body[k.toLowerCase()] = FAKE[k];
 		}
 	}
 
-	const res = await t.notThrows(API.createDroplet({name: FAKE.NAME}));
+	const res = await API.createDroplet({name: FAKE.NAME});
 	t.is(res.message, 'Unprocessable Entity');
 	t.is(res.code, 422);
 
-	const data = await t.notThrows(API.createDroplet(body), 'complete request');
+	const data = await API.createDroplet(body);
+	t.pass('completes request');
 
 	await sleep(40000);
 	console.log('waited 40s!');
@@ -84,69 +84,58 @@ const shouldBe404 = [
 	'enableDropletIpv6', 'enableDropletPrivateNetworking'
 ];
 
-for (let act of shouldBe404) {
+for (const act of shouldBe404) {
 	test(`Droplet.${act}(id)`, async t => {
-		const res = await t.notThrows(API[act](FAKE.ID));
-		isNotFound(t, res);
+		isNotFound(t, await API[act](FAKE.ID));
 	});
 }
 
 test('Droplet.listDropletActions(id)', async t => {
-	const res = await API.listDropletActions(FAKE.ID);
-	t.deepEqual(res, [], 'is empty array');
+	t.deepEqual(await API.listDropletActions(FAKE.ID), [], 'is empty array');
 });
 
 test('Droplet.restoreDroplet(id, image)', async t => {
-	const res = await t.notThrows(API.restoreDroplet());
-	isNotFound(t, res);
+	isNotFound(t, await API.restoreDroplet());
 });
 
 test('Droplet.rebuildDroplet(id, image)', async t => {
-	const res = await t.notThrows(API.rebuildDroplet(FAKE.ID, FAKE.IMAGE));
-	isNotFound(t, res);
+	isNotFound(t, await API.rebuildDroplet(FAKE.ID, FAKE.IMAGE));
 });
 
 test('Droplet.resizeDroplet(id, size)', async t => {
-	const res = await t.notThrows(API.resizeDroplet(FAKE.ID, FAKE.SIZE));
-	isNotFound(t, res);
+	isNotFound(t, await API.resizeDroplet(FAKE.ID, FAKE.SIZE));
 });
 
 test('Droplet.renameDroplet(id, name)', async t => {
-	const res = await t.notThrows(API.renameDroplet(FAKE.ID, FAKE.NAME));
-	isNotFound(t, res);
+	isNotFound(t, await API.renameDroplet(FAKE.ID, FAKE.NAME));
 });
 
 test('Droplet.changeDropletKernel(id, kernel)', async t => {
-	const res = await t.notThrows(API.changeDropletKernel(FAKE.ID, FAKE.KERNEL));
-	isNotFound(t, res);
+	isNotFound(t, await API.changeDropletKernel(FAKE.ID, FAKE.KERNEL));
 });
 
 test('Droplet.takeDropletSnapshot(id, name)', async t => {
-	const res = await t.notThrows(API.takeDropletSnapshot(FAKE.ID, FAKE.NAME));
-	isNotFound(t, res);
+	isNotFound(t, await API.takeDropletSnapshot(FAKE.ID, FAKE.NAME));
 });
 
-for (let act of ['listImages', 'listDistributionImages', 'listApplicationImages']) {
+for (const act of ['listImages', 'listDistributionImages', 'listApplicationImages']) {
 	test(`Image.${act}()`, async t => {
 		await t.notThrows(API[act]());
 	});
 }
 
-for (let act of ['getImage', 'deleteImage']) {
+for (const act of ['getImage', 'deleteImage']) {
 	test(`Image.${act}(id)`, async t => {
-		const res = await t.notThrows(API[act](FAKE.ID));
-		isNotFound(t, res);
+		isNotFound(t, await API[act](FAKE.ID));
 	});
 }
 
 test('Image.renameImage(id, name)', async t => {
-	const res = await t.notThrows(API.renameImage(FAKE.ID, FAKE.NAME));
-	isNotFound(t, res);
+	isNotFound(t, await API.renameImage(FAKE.ID, FAKE.NAME));
 });
 
 test('Image.transferImage(id, region)', async t => {
-	const res = await t.notThrows(API.transferImage(FAKE.ID, FAKE.REGION));
-	isNotFound(t, res);
+	isNotFound(t, await API.transferImage(FAKE.ID, FAKE.REGION));
 });
 
 test('Volume.listVolumes()', async t => {
@@ -158,23 +147,24 @@ test('Volume.listVolumes(region)', async t => {
 });
 
 test('Volume.createVolume()', async t => {
-	t.plan(4);
+	t.plan(3);
 
 	const body = {};
-	for (let k of Object.keys(FAKE)) {
+	for (const k of Object.keys(FAKE)) {
 		if (k !== 'ID' && k !== 'VOLUME') {
 			body[k.toLowerCase()] = FAKE[k];
 		}
 	}
 
-	const res = await t.notThrows(API.createVolume({name: FAKE.NAME}));
+	const res = await API.createVolume({name: FAKE.NAME});
 	t.is(res.code, 400);
 
-	const data = await t.notThrows(API.createVolume({
+	const data = await API.createVolume({
 		size_gigabytes: FAKE.SIZE_GIGABYTES,
 		name: FAKE.NAME,
 		region: FAKE.STORAGE_REGION
-	}), 'complete request');
+	});
+	t.pass('completes request');
 
 	if (data.code && data.code !== 201) {
 		t.fail(`volume could not be created: ${JSON.stringify(data)}`);
@@ -190,21 +180,19 @@ const shouldAlsoBe404 = [
 	'getVolume', 'listVolumeSnapshots', 'getVolumeAction'
 ];
 
-for (let act of shouldAlsoBe404) {
+for (const act of shouldAlsoBe404) {
 	test(`Volume.${act}(id)`, async t => {
-		const res = await t.notThrows(API[act](FAKE.VOLUME, FAKE.ID));
-		isNotFound(t, res);
+		isNotFound(t, await API[act](FAKE.VOLUME, FAKE.ID));
 	});
 }
 
 test('Volume.getVolumeByName(name, region)', async t => {
-	const res = await t.notThrows(API.getVolumeByName(FAKE.NONEXISTANT_NAME, FAKE.STORAGE_REGION));
+	const res = await API.getVolumeByName(FAKE.NONEXISTANT_NAME, FAKE.STORAGE_REGION);
 	t.deepEqual(res, [], 'is empty array');
 });
 
 test('Volume.deleteVolumeByName(name, region)', async t => {
-	const res = await t.notThrows(API.deleteVolumeByName(FAKE.NONEXISTANT_NAME, FAKE.STORAGE_REGION));
-	isNotFound(t, res);
+	isNotFound(t, await API.deleteVolumeByName(FAKE.NONEXISTANT_NAME, FAKE.STORAGE_REGION));
 });
 
 test('Volume.listVolumeActions(id)', async t => {
@@ -214,23 +202,20 @@ test('Volume.listVolumeActions(id)', async t => {
 });
 
 test('Volume.takeVolumeSnapshot(id, name)', async t => {
-	const res = await t.notThrows(API.takeVolumeSnapshot(FAKE.VOLUME, FAKE.NAME));
+	const res = await API.takeVolumeSnapshot(FAKE.VOLUME, FAKE.NAME);
 	isNotFound(t, res);
 });
 
 test('Volume.attachVolume(volumeId, dropletId)', async t => {
-	const res = await t.notThrows(API.attachVolume(FAKE.VOLUME, FAKE.ID));
-	isNotFound(t, res);
+	isNotFound(t, await API.attachVolume(FAKE.VOLUME, FAKE.ID));
 });
 
 test('Volume.detachVolume(volumeId, dropletId)', async t => {
-	const res = await t.notThrows(API.detachVolume(FAKE.VOLUME, FAKE.ID));
-	isNotFound(t, res);
+	isNotFound(t, await API.detachVolume(FAKE.VOLUME, FAKE.ID));
 });
 
 test('Volume.resizeVolume(id, size)', async t => {
-	const res = await t.notThrows(API.resizeVolume(FAKE.VOLUME, FAKE.SIZE_GIGABYTES));
-	isNotFound(t, res);
+	isNotFound(t, await API.resizeVolume(FAKE.VOLUME, FAKE.SIZE_GIGABYTES));
 });
 
 test('Region.listRegions()', async t => {
@@ -242,7 +227,7 @@ test('FloatingIP.listFloatingIPs()', async t => {
 });
 
 test('FloatingIP.createFloatingIP()', async t => {
-	t.plan(8);
+	t.plan(7);
 
 	const noParamsError = t.throws(() => {
 		API.createFloatingIP({});
@@ -254,10 +239,11 @@ test('FloatingIP.createFloatingIP()', async t => {
 	});
 	t.regex(excessiveParamsError.message, /not both/);
 
-	const res = await t.notThrows(API.createFloatingIP({region: 'bad region'}));
+	const res = await API.createFloatingIP({region: 'bad region'});
 	t.is(res.code, 422);
 
-	const data = await t.notThrows(API.createFloatingIP({region: FAKE.REGION}), 'complete request');
+	const data = await API.createFloatingIP({region: FAKE.REGION});
+	t.pass('completes request');
 
 	if (data.code && data.code !== 202) {
 		t.fail(`floating ip could not be created: ${JSON.stringify(data)}`);
@@ -265,28 +251,25 @@ test('FloatingIP.createFloatingIP()', async t => {
 
 	await sleep(10000);
 
-	await t.notThrows(API.deleteFloatingIP(data.ip), 'FloatingIP.createFloatingIP(id)');
+	await t.notThrows(API.deleteFloatingIP(data.ip), 'deletes IP with `No Content` response');
 });
 
 const shouldAlsoAlsoBe404 = [
 	'getFloatingIP', 'getFloatingIPAction'
 ];
 
-for (let act of shouldAlsoAlsoBe404) {
+for (const act of shouldAlsoAlsoBe404) {
 	test(`FloatingIP.${act}(id)`, async t => {
-		const res = await t.notThrows(API[act](FAKE.VOLUME, FAKE.ID));
-		isNotFound(t, res);
+		isNotFound(t, await API[act](FAKE.VOLUME, FAKE.ID));
 	});
 }
 
 test('FloatingIP.assignFloatingIP(ip, dropletId)', async t => {
-	const res = await t.notThrows(API.assignFloatingIP(FAKE.IP, FAKE.ID));
-	isNotFound(t, res);
+	isNotFound(t, await API.assignFloatingIP(FAKE.IP, FAKE.ID));
 });
 
 test('FloatingIP.unassignFloatingIP(ip)', async t => {
-	const res = await t.notThrows(API.unassignFloatingIP(FAKE.IP));
-	isNotFound(t, res);
+	isNotFound(t, await API.unassignFloatingIP(FAKE.IP));
 });
 
 test('FloatingIP.listFloatingIPActions(ip)', async t => {
